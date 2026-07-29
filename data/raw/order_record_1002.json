@@ -1,0 +1,19 @@
+{
+  "content": {
+    "product": "NovaHeadphones",
+    "price": 100.0,
+    "promo_code": "FALL20",
+    "discount_applied": 0.0,
+    "total_charged": 100.0
+  },
+  "metadata": {
+    "source_type": "order_record",
+    "issue_id": "issue_2",
+    "date": "2023-10-10",
+    "customer": "Bob Johnson",
+    "order_id": "ORD-1002",
+    "supplier_id": null,
+    "department": "sales",
+    "doc_id": "order_record_1002.json"
+  }
+}

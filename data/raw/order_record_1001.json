@@ -1,0 +1,18 @@
+{
+  "content": {
+    "product": "NovaWatch Series 4",
+    "price": 299.99,
+    "supplier": "TechNova",
+    "status": "fulfilled"
+  },
+  "metadata": {
+    "source_type": "order_record",
+    "issue_id": "issue_1",
+    "date": "2023-09-15",
+    "customer": "Alice Smith",
+    "order_id": "ORD-1001",
+    "supplier_id": "TechNova",
+    "department": "sales",
+    "doc_id": "order_record_1001.json"
+  }
+}

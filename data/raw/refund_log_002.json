@@ -1,0 +1,18 @@
+{
+  "content": {
+    "amount": 20.0,
+    "reason": "Promo code error adjustment",
+    "status": "approved",
+    "customer_name": "Bob Johnson"
+  },
+  "metadata": {
+    "source_type": "refund_log",
+    "issue_id": "issue_2",
+    "date": "2023-10-09",
+    "customer": "Bob Johnson",
+    "order_id": "ORD-1002",
+    "supplier_id": null,
+    "department": "billing",
+    "doc_id": "refund_log_002.json"
+  }
+}

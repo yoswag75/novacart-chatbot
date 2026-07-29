@@ -1,0 +1,17 @@
+{
+  "content": {
+    "product": "NovaTablet",
+    "status": "Delivered",
+    "tracking": "TRK-999"
+  },
+  "metadata": {
+    "source_type": "order_record",
+    "issue_id": "issue_3",
+    "date": "2023-11-01",
+    "customer": "Charlie Davis",
+    "order_id": "ORD-2001",
+    "supplier_id": null,
+    "department": "sales",
+    "doc_id": "order_record_2001.json"
+  }
+}

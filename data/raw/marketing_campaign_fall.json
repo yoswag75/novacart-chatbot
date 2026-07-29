@@ -1,0 +1,19 @@
+{
+  "content": {
+    "campaign_name": "Fall Sale",
+    "promo_code": "FALL20",
+    "discount_pct": 20,
+    "start_date": "2023-10-01",
+    "end_date": "2023-10-31"
+  },
+  "metadata": {
+    "source_type": "marketing_campaign",
+    "issue_id": "issue_2",
+    "date": "2023-10-01",
+    "customer": null,
+    "order_id": null,
+    "supplier_id": null,
+    "department": "marketing",
+    "doc_id": "marketing_campaign_fall.json"
+  }
+}

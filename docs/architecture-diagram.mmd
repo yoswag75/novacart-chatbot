@@ -1,0 +1,85 @@
+flowchart TD
+    subgraph Client["🖥️ CLI Client"]
+        CLI["Rich Terminal UI\n(prompt_toolkit + httpx-sse)"]
+    end
+
+    subgraph API["⚡ FastAPI Backend"]
+        HEALTH["GET /health"]
+        AUTH["Bearer Token\nAuth Middleware"]
+        STREAM["POST /query/stream\n(SSE StreamingResponse)"]
+    end
+
+    subgraph Graph["🧠 LangGraph Reasoning Loop"]
+        PLAN["Analyze & Plan\n─────────────────\nDecompose query into\n≤2 focused search steps"]
+        RETRIEVE["Retrieve Evidence\n─────────────────\nSemantic search\nChromaDB (top-3 chunks)"]
+        DLP["DLP Filter\n─────────────────\nRegex PII masking\n(credit cards)"]
+        JUDGE["Evaluate State (Judge)\n─────────────────\nAssess evidence quality,\nflag anomalies,\npop/keep plan step"]
+        SYNTH["Synthesize & Cite\n─────────────────\nGenerate cited answer,\nsurface anomalies,\nnote missing evidence"]
+    end
+
+    subgraph Models["🤖 LLM Layer"]
+        FALLBACK["Dynamic Model Fallback\n─────────────────\nGemma-4 → Gemini-3.5-Flash\n→ Gemini-2.5-Flash → ..."]
+        EMBED["Embeddings\n─────────────────\ngemini-embedding-2\n(fallback: all-MiniLM-L6-v2)"]
+    end
+
+    subgraph Data["💾 Data Layer"]
+        INGEST["Ingestion Script\n(src/ingest.py)"]
+        RAW["Raw Documents\n─────────────────\n18 files: JSON + MD\n(tickets, orders, refunds,\nemails, reports, logs)"]
+        CHROMA[("ChromaDB\n(Persistent Vector Store)")]
+    end
+
+    subgraph SSE_Events["📡 SSE Event Types"]
+        EV_STATUS["status: node progress"]
+        EV_TOKEN["token: synthesis chunks"]
+        EV_COMPLETE["complete: citations +\nanomalies + missing_evidence"]
+        EV_ERROR["error: failure message"]
+    end
+
+    %% Client → API flow
+    CLI -->|"HTTP POST + Bearer token"| STREAM
+    CLI -.->|"HTTP GET"| HEALTH
+    STREAM --> AUTH
+    AUTH -->|"Validated"| PLAN
+
+    %% LangGraph loop
+    PLAN -->|"search_plan[]"| RETRIEVE
+    RETRIEVE -->|"retrieved_documents[]"| DLP
+    DLP -->|"redacted documents"| JUDGE
+    JUDGE -->|"plan has steps &\nhop_count < 3"| RETRIEVE
+    JUDGE -->|"plan empty or\nhop_count ≥ 3"| SYNTH
+
+    %% LLM calls
+    PLAN -.->|"LLM call"| FALLBACK
+    JUDGE -.->|"LLM call"| FALLBACK
+    SYNTH -.->|"LLM call\n(tokens streamed)"| FALLBACK
+
+    %% Data flow
+    RAW -->|"parse + embed"| INGEST
+    INGEST -->|"store vectors"| CHROMA
+    RETRIEVE <-->|"semantic query\n(top-3 results)"| CHROMA
+    RETRIEVE -.->|"embedding call"| EMBED
+
+    %% SSE output
+    SYNTH -->|"stream"| STREAM
+    STREAM -->|"SSE events"| CLI
+
+    %% SSE event types
+    STREAM -.-> EV_STATUS
+    STREAM -.-> EV_TOKEN
+    STREAM -.-> EV_COMPLETE
+    STREAM -.-> EV_ERROR
+
+    %% Styling
+    classDef clientStyle fill:#1a1a2e,stroke:#e94560,color:#fff,stroke-width:2px
+    classDef apiStyle fill:#16213e,stroke:#0f3460,color:#fff,stroke-width:2px
+    classDef graphStyle fill:#0f3460,stroke:#533483,color:#fff,stroke-width:2px
+    classDef dataStyle fill:#1a1a2e,stroke:#e94560,color:#fff,stroke-width:2px
+    classDef modelStyle fill:#533483,stroke:#e94560,color:#fff,stroke-width:2px
+    classDef sseStyle fill:#2d2d3f,stroke:#888,color:#ccc,stroke-width:1px,stroke-dasharray:5 5
+
+    class CLI clientStyle
+    class HEALTH,AUTH,STREAM apiStyle
+    class PLAN,RETRIEVE,DLP,JUDGE,SYNTH graphStyle
+    class INGEST,RAW,CHROMA dataStyle
+    class FALLBACK,EMBED modelStyle
+    class EV_STATUS,EV_TOKEN,EV_COMPLETE,EV_ERROR sseStyle

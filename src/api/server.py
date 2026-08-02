@@ -6,7 +6,7 @@ from fastapi.responses import StreamingResponse
 from pydantic import BaseModel
 import asyncio
 from dotenv import load_dotenv
-from src.agent.graph import build_graph
+from agent.graph import build_graph
 
 load_dotenv()
 

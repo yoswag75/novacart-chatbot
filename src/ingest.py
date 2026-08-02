@@ -104,7 +104,11 @@ def ingest_data():
             # Filter out None values from metadata as ChromaDB doesn't allow None
             clean_meta = {k: v for k, v in doc_meta.items() if v is not None}
             
-            documents.append(doc_text)
+            # Combine metadata and content for better semantic search retrieval
+            meta_str = ", ".join(f"{k}: {v}" for k, v in clean_meta.items())
+            doc_text_with_meta = f"[{meta_str}]\n{doc_text}"
+            
+            documents.append(doc_text_with_meta)
             metadatas.append(clean_meta)
             ids.append(clean_meta.get("doc_id", str(uuid.uuid4())))
             

@@ -168,13 +168,21 @@ def analyze_and_plan_node(state: Dict[str, Any]) -> Dict[str, Any]:
     # Try to parse the JSON output
     try:
         content = response.content
+        if isinstance(content, list):
+            content = "".join(b.get("text", "") if isinstance(b, dict) else str(b) for b in content)
         # Strip markdown code blocks if present
         if "```json" in content:
             content = content.split("```json")[1].split("```")[0].strip()
         elif "```" in content:
             content = content.split("```")[1].split("```")[0].strip()
         parsed = json.loads(content)
-        plan_list = parsed.get("plan", [])
+        raw_plan = parsed.get("plan", [])
+        if isinstance(raw_plan, str):
+            plan_list = [raw_plan]
+        elif isinstance(raw_plan, list):
+            plan_list = [str(x) for x in raw_plan]
+        else:
+            plan_list = [str(raw_plan)]
     except Exception as e:
         logger.error(f"Failed to parse plan JSON: {e}")
         plan_list = [query] # Fallback
@@ -294,15 +302,30 @@ def evaluate_state_node(state: Dict[str, Any]) -> Dict[str, Any]:
             )
         )
         content = response.content
+        if isinstance(content, list):
+            content = "".join(b.get("text", "") if isinstance(b, dict) else str(b) for b in content)
         if "```json" in content:
             content = content.split("```json")[1].split("```")[0].strip()
         elif "```" in content:
             content = content.split("```")[1].split("```")[0].strip()
         parsed = json.loads(content)
         
+        raw_anomalies = parsed.get("anomalies", [])
+        sanitized_anomalies = []
+        if isinstance(raw_anomalies, str):
+            sanitized_anomalies.append({"type": "unknown", "description": raw_anomalies})
+        elif isinstance(raw_anomalies, list):
+            for a in raw_anomalies:
+                if isinstance(a, dict) and "description" in a:
+                    sanitized_anomalies.append(a)
+                elif isinstance(a, str):
+                    sanitized_anomalies.append({"type": "unknown", "description": a})
+                else:
+                    sanitized_anomalies.append({"type": "unknown", "description": str(a)})
+        
         evaluation = JudgeEvaluation(
             found_data=parsed.get("found_data", True),
-            anomalies=parsed.get("anomalies", []),
+            anomalies=sanitized_anomalies,
             pop_step=parsed.get("pop_step", True)
         )
     except Exception as e:

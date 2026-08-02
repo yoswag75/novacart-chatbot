@@ -24,7 +24,7 @@ def should_continue(state: AgentState) -> Literal["retrieve_evidence", "synthesi
     # Let's say `Evaluate_State` will update `search_plan` by popping the current step if satisfied,
     # or if `hop_count` >= 3, we exit.
     
-    if state["hop_count"] >= 3:
+    if state["hop_count"] >= 10:
         return "synthesize_and_cite"
         
     # If there's still a plan left to execute, we retrieve

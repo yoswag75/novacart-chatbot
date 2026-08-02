@@ -40,6 +40,16 @@ async def query_backend(question: str):
                             live.stop()
                         console.print(f"[dim]{data['message']}[/dim]")
                         
+                    elif data["type"] == "plan":
+                        if live.is_started:
+                            live.stop()
+                        plan_list = data.get("plan", [])
+                        if plan_list:
+                            console.print("\n[bold yellow]Search Plan:[/bold yellow]")
+                            for i, step in enumerate(plan_list, 1):
+                                console.print(f"  {i}. {step}")
+                            console.print("\n")
+                            
                     elif data["type"] == "token":
                         # Start live display if not started
                         if not live.is_started:

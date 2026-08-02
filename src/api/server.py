@@ -71,6 +71,12 @@ async def stream_generator(question: str):
                         )
                     if content:
                         yield f"data: {json.dumps({'type': 'token', 'content': content})}\n\n"
+                        
+            # Emit plan when analyze_and_plan node finishes
+            elif kind == "on_chain_end" and name == "analyze_and_plan":
+                output = event.get("data", {}).get("output", {})
+                if isinstance(output, dict) and "search_plan" in output:
+                    yield f"data: {json.dumps({'type': 'plan', 'plan': output['search_plan']})}\n\n"
                     
             # 3. Final Payload
             # When the overall graph completes, we can emit the final state

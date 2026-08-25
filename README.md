@@ -933,4 +933,4 @@ This project is currently unlicensed. All rights reserved.
 
 ---
 
-*Built with [LangGraph](https://github.com/langchain-ai/langgraph), [ChromaDB](https://github.com/chroma-core/chroma), [FastAPI](https://fastapi.tiangolo.com/), and [Google Gemini 2.5 Pro](https://deepmind.google/technologies/gemini/).*
+*Built with [LangGraph](https://github.com/langchain-ai/langgraph), [ChromaDB](https://github.com/chroma-core/chroma) and [FastAPI](https://fastapi.tiangolo.com/)

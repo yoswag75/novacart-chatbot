@@ -106,7 +106,7 @@ User Query
                                                  └─────────────────────────┘
 ```
 
-### Architecture Diagram (Mermaid)
+### Architecture Diagram
 
 ```mermaid
 flowchart TD
